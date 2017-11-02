@@ -6,6 +6,7 @@
 //  Copyright © 2017年 孙浩. All rights reserved.
 //
 
+#include <stdio.h>
 #include<stdio.h>
 #include<stdlib.h>
 #include<time.h>
@@ -16,6 +17,7 @@
 #define ERROE 0
 #define TRUE 1
 #define FALSE 0
+#define Max 20
 typedef int Status;
 
 typedef struct{
@@ -36,6 +38,7 @@ typedef struct{
 }SqStack;
 
 int puzzle[20][20];
+int Times = 0;
 
 /*随机生成迷宫的函数*/
 /*为了能够让尽量能通过，将能通过的块和不能通过的块数量比大致为2:1*/
@@ -60,6 +63,7 @@ void Random(){
             }
         }
 }
+
 //构造一个空栈
 Status InitStack(SqStack &s){
     s.base =(SElemType *)malloc(stack_init_size * sizeof(SElemType));
@@ -136,9 +140,9 @@ Status MarkPrint(PosType e){
 }
 
 //迷宫函数
-// 若迷宫maze中从入口 start到出口 end的通道，则求得一条存放在栈中
+// 若迷宫Puzzle中从入口 start到出口 end的通道，则求得一条存放在栈中
 // （从栈底到栈顶），并返回TRUE；否则返回FALSE
-Status MazePath(int puzzle,PosType start,PosType end,SqStack &s){
+Status PuzzlePath(int puzzle,PosType start,PosType end,SqStack &s){
     PosType curpos;
     InitStack(s);
     SElemType e;
@@ -179,14 +183,14 @@ Status MazePath(int puzzle,PosType start,PosType end,SqStack &s){
 }
 
 //打印迷宫
-void PrintMaze(){
+void PrintPuzzle(){
     int i,j;
     printf("运行路径:\n\n");
     for(i=0;i<20;i++){
         for(j=0;j<20;j++){
             if(puzzle[i][j]==0)printf("   ");
             else if(puzzle[i][j]==1) printf(" 0 ");		//迷宫的“墙”
-            else if(puzzle[i][j]==3) printf(" -1");      //不通的路
+            else if(puzzle[i][j]==3) printf("-1 ");      //不通的路
             else if(puzzle[i][j]==7)printf(" 1 ");		//通过的路径
         }
         printf("\n");
@@ -194,30 +198,23 @@ void PrintMaze(){
     printf("\n");
 }
 
-
-int main(int argc, const char * argv[]) {    SqStack S;
+void Procession(){
+    SqStack S;
     PosType start,end;
-    start.x=1;start.y=0;	//起点坐标
-    end.x=18;end.y=19;	//终点坐标
-    printf("\n==================迷宫游戏==================");
-    printf("\n说明:0不能走的区域\t-1走不通的区域");
-    printf("\n    “空格”代表未到过的区域");
-    printf("\n     1代表能通过的路径，指向终点");
-    printf("\n============================================");
+    start.x=1;start.y=1;	//起点坐标
+    end.x=1;end.y=0;	//终点坐标
     Random();
-    printf("\n\nTest 1:");
-    MazePath(puzzle[19][19],start,end,S);
-    PrintMaze();
     system("pause");
-    Random();
-    printf("\nTest 2:");
-    MazePath(puzzle[19][19],start,end,S);
-    PrintMaze();
-    system("pause");
-    Random();
-    printf("\nTest 3:");
-    MazePath(puzzle[19][19],start,end,S);
-    PrintMaze();
-    printf("\n==========The programme exits, thanks for using it!==========\n");
+    printf("\n\nTest %d:",Times++);
+    PuzzlePath(puzzle[Max-1][Max-1],start,end,S);
+    PrintPuzzle();
+}
+
+int main(int argc, const char * argv[]) {
+    int Still = 1;
+    do{
+        Procession();
+        scanf("%d",&Still);
+    }while (Still);
     return 0;
 }
